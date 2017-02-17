@@ -92,7 +92,7 @@ func enableBackgrounds() {
 	log.Println("Done.")
 
 	log.Print("Backing up old background....")
-	fileErr := os.Rename(backgroundLocation, filepath.Join(backgroundLocation, ".bkp"))
+	fileErr := os.Rename(backgroundLocation, fmt.Sprintf("%s.bkp", backgroundLocation))
 	if (fileErr != nil) && (!os.IsNotExist(fileErr)) {
 		log.Fatalln(fileErr, "You may need to use the command line parameter '--elevate'.")
 	}
