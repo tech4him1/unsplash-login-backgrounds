@@ -73,11 +73,11 @@ func updateBackground(updateCycle time.Duration, imgCategory string) {
 
 func enableBackgrounds() {
 	log.Print("Enabling Backgrounds....")
-	logonUI, _, err := registry.CreateKey(registry.LOCAL_MACHINE, `SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI`, registry.SET_VALUE)
+	logonUI, _, err := registry.CreateKey(registry.LOCAL_MACHINE, `SOFTWARE\Microsoft\Windows\CurrentVersion\Authentication\LogonUI\Background`, registry.QUERY_VALUE+registry.SET_VALUE)
 	if err != nil {
 		log.Fatalln(err, "You may need to use the command line parameter '--elevate'.")
 	}
-	err = logonUI.SetDWordValue("Background", 1)
+	err = logonUI.SetDWordValue("OEMBackground", 1)
 	if err != nil {
 		log.Fatalln(err, "You may need to use the command line parameter '--elevate'.")
 	}
