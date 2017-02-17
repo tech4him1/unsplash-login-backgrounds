@@ -28,7 +28,7 @@ func main() {
 	if *enable == true {
 		// If we are already elevated (to admin privileges), run the enable functions.  If we are not elevated, elevate.
 		if *elevateFlag == true {
-			elevate.Elevate(exePath, "--enable", "")
+			elevate.Elevate(exePath, fmt.Sprintf("--enable --time '%v' --type '%v'", updateCycle, imgCategory), "")
 			return
 		} else {
 			enableBackgrounds()
@@ -36,6 +36,7 @@ func main() {
 			return
 		}
 	}
+	
 	updateBackground(*updateCycle, *imgCategory)
 }
 
