@@ -12,17 +12,23 @@ import (
 	"os/exec"
 	"path/filepath"
 	"time"
+	"strings"
 )
 
 var backgroundLocation string = filepath.Join(os.Getenv("windir"), "system32/oobe/info/backgrounds", "backgroundDefault.jpg")
 var exePath, _ = filepath.Abs(os.Args[0])
+var imgCategories = []string{"buildings", "food", "nature", "people", "technology", "objects"}
 
 func main() {
-	imgCategory := flag.String("type", "nature", "Image category (i.e. nature, birds, people, water).")
+	imgCategory := flag.String("type", "nature", fmt.Sprintf("Image category (Options: %v).", strings.Join(imgCategories, ", ")))
 	updateCycle := flag.Duration("time", time.Hour, "Image update cycle.")
 	enable := flag.Bool("enable", false, "Enable custom login backgrounds on this computer.")
 	elevateFlag := flag.Bool("elevate", false, "Run with admin privileges if necessary (can create UAC prompt).")
 	flag.Parse()
+
+	if !validCategory(*imgCategory) {
+		log.Fatalf("Invalid category %v.  Valid categories: %v.", *imgCategory, strings.Join(imgCategories, ", "))
+	}
 
 	if *enable == true {
 		// If we are already elevated (to admin privileges), run the enable functions.  If we are not elevated, elevate.
@@ -101,4 +107,13 @@ func runEveryBoot(updateCycle time.Duration, imgCategory string) {
 		log.Fatal(string(err.(*exec.ExitError).Stderr))
 	}
 	log.Println("Done.")
+}
+
+func validCategory(cat string) bool {
+    for _, v := range imgCategories {
+        if cat == v {
+            return true
+        }
+    }
+    return false
 }
