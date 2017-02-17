@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
 	"time"
 )
@@ -36,7 +35,7 @@ func main() {
 			return
 		}
 	}
-	
+
 	updateBackground(*updateCycle, *imgCategory)
 }
 
@@ -48,7 +47,7 @@ func updateBackground(updateCycle time.Duration, imgCategory string) {
 	defer imgFile.Close()
 
 	for {
-		imgDownload, downlErr := http.Get(path.Join("https://source.unsplash.com/category", imgCategory))
+		imgDownload, downlErr := http.Get(fmt.Sprintf("https://source.unsplash.com/category/%s", imgCategory))
 		if downlErr != nil {
 			log.Println(downlErr)
 			continue // Try again.
