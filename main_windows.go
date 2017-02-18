@@ -42,33 +42,36 @@ func main() {
 		}
 	}
 
-	updateBackground(*updateCycle, *imgCategory)
+	for {
+		updateBackground(*imgCategory)
+		time.Sleep(*updateCycle)
+	}
 }
 
-func updateBackground(updateCycle time.Duration, imgCategory string) {
+func updateBackground(imgCategory string) {
 	imgFile, fileErr := os.Create(backgroundLocation)
 	if fileErr != nil {
 		log.Fatalln(fileErr, "You may need to use the command line parameter '--elevate'.")
 	}
 	defer imgFile.Close()
 
-	for {
-		imgDownload, downlErr := http.Get(fmt.Sprintf("https://source.unsplash.com/category/%s", imgCategory))
-		if downlErr != nil {
-			log.Println(downlErr)
-			continue // Try again.
-		} else if imgDownload.Header["Content-Type"][0] != "image/jpeg" {
-			log.Println("Image must be a jpeg.", "Trying again....")
-			continue // Try again.
-		}
-		_, saveErr := io.Copy(imgFile, imgDownload.Body)
-		if saveErr != nil {
-			log.Fatalln(saveErr, "You may need to use the command line parameter '--elevate'.")
-		}
-		imgDownload.Body.Close()
-		log.Print("Image updated.")
-		time.Sleep(updateCycle)
+	imgDownload, downlErr := http.Get(fmt.Sprintf("https://source.unsplash.com/category/%s", imgCategory))
+	if downlErr != nil {
+		log.Println(downlErr)
+		updateBackground(imgCategory) // Try again.
+		return
+	} else if imgDownload.Header["Content-Type"][0] != "image/jpeg" {
+		log.Println("Image must be a jpeg.", "Trying again....")
+		updateBackground(imgCategory) // Try again.
+		return
 	}
+	_, saveErr := io.Copy(imgFile, imgDownload.Body)
+	if saveErr != nil {
+		log.Fatalln(saveErr, "You may need to use the command line parameter '--elevate'.")
+	}
+	imgDownload.Body.Close()
+
+	log.Print("Image updated.")
 }
 
 func enableBackgrounds() {
