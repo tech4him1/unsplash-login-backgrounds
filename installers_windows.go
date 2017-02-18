@@ -34,9 +34,16 @@ func enableBackgrounds() {
 	log.Println("Done.")
 
 	log.Print("Backing up old background....")
-	fileErr := os.Rename(backgroundLocation, fmt.Sprintf("%s.bkp", backgroundLocation))
-	if (fileErr != nil) && (!os.IsNotExist(fileErr)) {
-		log.Fatalln(fileErr, "You may need to use the command line parameter '--elevate'.")
+	// Make sure we are not overwriting a backup that is already there.
+	if _, err = os.Stat(fmt.Sprintf("%s.bkp", backgroundLocation)); os.IsNotExist(err) {
+		// Backup the curent background by appending `.bkp` to its current filename.
+		fileErr := os.Rename(backgroundLocation, fmt.Sprintf("%s.bkp", backgroundLocation))
+		// If an error is just saying that there was no image there, ignore it.
+		if (fileErr != nil) && (!os.IsNotExist(fileErr)) {
+			log.Fatalln(fileErr, "You may need to use the command line parameter '--elevate'.")
+		}
+	} else {
+		log.Fatalln("Background backup already exists!  Are you sure that you have not already enabled this?")
 	}
 	log.Println("Done.")
 }
