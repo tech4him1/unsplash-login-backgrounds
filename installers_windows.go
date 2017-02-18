@@ -50,10 +50,10 @@ func enableBackgrounds() {
 
 func runEveryBoot(updateCycle time.Duration, imgCategory string) {
 	log.Print("Setting to run every boot....")
-	// We don't need to use the --elevate parameter here because we are scheduling the task with the highest privileges.
+	// We don't need to use the --elevate parameter when we are running the task because we are scheduling the task with the highest privileges (it will already be elevated).
 	args := []string{"/create", "/sc", "onlogon", "/tn", "unsplash-login-backgrounds", "/rl", "highest", "/tr", fmt.Sprintf("'%s' --time '%v' --type '%v'", exePath, updateCycle, imgCategory)}
 	if _, err := exec.Command("schtasks", args...).Output(); err != nil {
-		log.Fatal(string(err.(*exec.ExitError).Stderr))
+		log.Fatal(string(err.(*exec.ExitError).Stderr), "You may need to use the command line parameter '--elevate'.")
 	}
 	log.Println("Done.")
 }
