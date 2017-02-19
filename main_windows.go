@@ -16,6 +16,7 @@ func main() {
 	imgCategory := flag.String("type", "nature", fmt.Sprintf("Image category (Options: %v).", strings.Join(imgCategories, ", ")))
 	updateCycle := flag.Duration("time", time.Hour, "Image update cycle.")
 	enable := flag.Bool("enable", false, "Enable custom login backgrounds on this computer.")
+	disable := flag.Bool("disable", false, "Disable login background updater on this computer.")
 	elevateFlag := flag.Bool("elevate", false, "Run with admin privileges if necessary (can create UAC prompt).")
 	flag.Parse()
 
@@ -31,6 +32,16 @@ func main() {
 		} else {
 			enableBackgrounds()
 			runEveryBoot(*updateCycle, *imgCategory)
+			return
+		}
+	} else if *disable == true {
+		// If we are already elevated (to admin privileges), run the enable functions.  If we are not elevated, elevate.
+		if *elevateFlag == true {
+			elevate.Elevate(exePath, "--disable", "")
+			return
+		} else {
+			disableBackgroundUpdater()
+			disableRunEveryBoot()
 			return
 		}
 	}

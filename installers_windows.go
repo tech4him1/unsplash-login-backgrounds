@@ -57,3 +57,35 @@ func runEveryBoot(updateCycle time.Duration, imgCategory string) {
 	}
 	log.Println("Done.")
 }
+
+func disableBackgroundUpdater() {
+	// If there is a login image backed up, ask the user if they want to restore it (they may just want to keep the current downloaded image without it updating).
+	fmt.Print("Would you like to restore the original/OEM image [y/N]? ")
+	var restoreImg string
+	fmt.Scanln(&restoreImg)
+	if restoreImg == "y" || restoreImg == "Y" {
+		log.Print("Restoring old background....")
+		fileErr := os.Rename(fmt.Sprintf("%s.bkp", backgroundLocation), backgroundLocation)
+		if fileErr != nil {
+			if os.IsNotExist(fileErr) {
+				// If there is no backup image, the original image would be the Windows one, so just delete the current image to restore that.
+				fileErr = os.Remove(backgroundLocation)
+				if fileErr != nil {
+					log.Fatalln(fileErr, "You may need to use the command line parameter '--elevate'.")
+				}
+			} else {
+				log.Fatalln(fileErr, "You may need to use the command line parameter '--elevate'.")
+			}
+		}
+		log.Println("Done.")
+	}
+}
+
+func disableRunEveryBoot() {
+		log.Print("Unsetting to run every boot....")
+		args := []string{"/delete", "/tn", "unsplash-login-backgrounds"}
+		if _, err := exec.Command("schtasks", args...).Output(); err != nil {
+			log.Fatal(string(err.(*exec.ExitError).Stderr), "You may need to use the command line parameter '--elevate'.")
+		}
+		log.Println("Done.")
+}
