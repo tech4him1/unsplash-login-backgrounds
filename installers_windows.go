@@ -16,9 +16,6 @@ func enableBackgrounds() {
 	if err != nil {
 		log.Fatalln(err, "You may need to use the command line parameter '--elevate'.")
 	}
-	if val, _, _ := logonUI.GetIntegerValue("OEMBackground"); val == 1 {
-		log.Fatalln("Backgrounds already enabled!  Either the OEM has enabled login backgrounds, or you are using another login background tool.")
-	}
 	err = logonUI.SetDWordValue("OEMBackground", 1)
 	if err != nil {
 		log.Fatalln(err, "You may need to use the command line parameter '--elevate'.")
